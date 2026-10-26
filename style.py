@@ -11,6 +11,23 @@ def headerStyle(header):
             text-align:center;
             margin: 20px 0;
         '>
-        {header}
+            {header}
         </div>
-        """
+    """
+        
+        
+        
+# Styling for KPIs
+def kpiStyle(label:str, value:str):
+    return f"""
+        <div style='text-align: center; border-left:3px solid #fff000;
+            border-bottom-left-radius:10px; border-top-left-radius:10px;'>
+            <div style='font-size: 1.4rem; margin: 10px 0'>
+                {label}
+            </div>
+            <div>
+                {value}
+            </div>
+        </div>
+
+    """
