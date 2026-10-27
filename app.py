@@ -292,5 +292,7 @@ with tab_top_bottom:
     )
     
     st.plotly_chart(fig)
+    
+    
 with raw_data:
     st.write('Data')
