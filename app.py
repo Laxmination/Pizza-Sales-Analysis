@@ -159,11 +159,138 @@ with tab_overview:
         )
         
         st.plotly_chart(fig, use_container_width=True)
-with tab_time:
-        st.write('TIme Analysis')
         
-with tab_top_bottom:
-    st.write('Top and Bottom')
+        
+        
+with tab_time:
+    left, right = st.columns(2)
     
+    with left:
+        day_sales = filtered.groupby('Order_Day', observed=False)['total_price'].sum().reset_index()
+        
+        fig = px.line(
+            day_sales,
+            x= 'Order_Day',
+            y='total_price',
+            markers='o'
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        with right:
+            hour_sales = filtered.groupby('Order_Hour')['total_price'].sum().reset_index()
+            st.subheader('sales by order hour')
+                    
+            fig = px.bar(
+                hour_sales,
+                x= 'Order_Hour',
+                y='total_price',
+                color_continuous_scale='blues',
+                labels={'Order Hour':'Hour', 'total_price':'Revenue($)'}
+            )
+            
+            fig.update_layout(coloraxis_showscale=False)
+            fig.update_xaxes(dtick=1)
+            
+            
+            st.plotly_chart(fig, use_container_width=True)
+            
+    # Monthly Sales
+    monthly_sales = df.groupby('Order_Month').agg(
+        Total_Price =('total_price', 'sum'),
+        Total_Orders = ('order_id', 'nunique')
+    ).reset_index()
+    
+    st.subheader('Sales by Order Month')
+    
+    fig = px.line(
+        monthly_sales,
+        x='Order_Month',
+        y='Total_Price',
+        markers=True
+    )
+    
+    fig.add_bar(
+        x=monthly_sales['Order_Month'],
+        y=monthly_sales['Total_Orders'],
+        name='Orders',
+        yaxis='y2',
+        opacity=0.60
+    )
+    
+    fig.update_layout(
+        yaxis1=dict(title='Total Price'),
+        yaxis2=dict(title='Orders', overlaying='y', side='right'),
+        legend=dict(orientation='h', y=1.1),
+        hovermode='x unified'
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    
+    
+with tab_top_bottom:
+    left, right = st.columns(2)
+    
+    top_n =st.slider('How many pizza you want to show?', min_value=3, max_value=10, value=5)
+    
+    with left:
+        st.subheader(f'Top {top_n} Best Selling Pizza')
+        
+        top_5 = filtered.groupby('pizza_name').agg(
+            Total_Revenue =('total_price', 'sum'),
+            Total_Orders =('order_id', 'sum'),
+            Total_Quantity =('quantity', 'sum')
+        ).reset_index().rename(
+            columns={'pizza_name':'Pizza Name', 'Total_Revenue':'Revenue($)'}
+        ).sort_values(ascending=False, by='Revenue($)', ignore_index=True).head(top_n)
+        
+        fig=px.bar(
+            top_5,
+            x='Revenue($)',
+            y='Pizza Name',
+            orientation='h',
+            color='Revenue($)',
+            color_continuous_scale='blues'
+        )
+        
+        fig.update_layout(coloraxis_showscale=False)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        
+    with right:
+        st.subheader(f'Bottom {top_n} least selling pizza')
+        bottom_5 =filtered.groupby('pizza_name').agg(
+            Total_Revenue =('total_price', 'sum')
+        ).reset_index().rename(
+            columns={'pizza_name': 'Pizza Name'}
+        ).sort_values(ascending=True, by='Total_Revenue', ignore_index=True).head(top_n)
+        
+        fig = px.bar(
+            bottom_5,
+            x= 'Total_Revenue',
+            y='Pizza Name',
+            orientation='h',
+            color='Total_Revenue',
+            color_continuous_scale='blues'
+        )
+        fig.update_layout(coloraxis_showscale=False)
+        st.plotly_chart(fig, use_container_width=True)
+        
+    st.divider()
+    st.subheader('Tree Map')
+    tree=(
+        filtered.groupby(['pizza_category','pizza_size', 'pizza_name'])['total_price'].sum().reset_index()
+    )
+    
+    fig =px.treemap(
+        tree,
+        path=['pizza_category', 'pizza_size', 'pizza_name'],
+        values='total_price',
+        color='total_price',
+        color_continuous_scale='RdBu'
+    )
+    
+    st.plotly_chart(fig)
 with raw_data:
     st.write('Data')
