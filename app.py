@@ -295,4 +295,15 @@ with tab_top_bottom:
     
     
 with raw_data:
-    st.write('Data')
+    filtered_df = df.drop(columns=['month_num', 'Order_Hour'])
+    
+    with st.form('Submit Form'):
+        search_text = st.text_input('Search Data', placeholder='Eg: The Classic Deluxe Pizza')
+        submitted = st.form_submit_button('Search')
+    
+    if submitted or search_text:
+        filtered_df[
+            filtered_df['pizza_name'].str.contains(search_text, na=False, case=False)
+        ]
+    else:
+        filtered_df
