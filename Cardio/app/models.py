@@ -1,10 +1,16 @@
 import joblib
 
-LOGISTIC_MODEL_PATH ='Cardio/models/Logistics/logistic_model.pkl'
-LOGISTIC_SCALER_PATH ='Cardio/models/Logistics/logistic_scaler.pkl'
+from pathlib import Path
 
-SVM_MODEL_PATH ='Cardio/models/SVM/svm_model.pkl'
-SVM_SCALER_PATH ='Cardio/models/SVM/svm_scaler.pkl'
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# LOGISTIC_MODEL_PATH ='Cardio/models/Logistics/logistic_model.pkl'
+LOGISTIC_MODEL_PATH =BASE_DIR/"models"/"Logistics"/"logistic_model.pkl"
+LOGISTIC_SCALER_PATH =BASE_DIR/"models"/"Logistics"/"logistic_scaler.pkl"
+# LOGISTIC_SCALER_PATH ='Cardio/models/Logistics/logistic_scaler.pkl'
+
+SVM_MODEL_PATH =BASE_DIR/"models"/"SVM"/"svm_model.pkl"
+SVM_SCALER_PATH =BASE_DIR/"models/SVM"/"svm_scaler.pkl"
 
 def read_logistic():
     model = joblib.load(LOGISTIC_MODEL_PATH)
@@ -86,15 +92,15 @@ def read_svm():
 #     X_test_scale = scaler.transform(X_test)
     
 #     model = SVC(
-#         kernel='linear',
-#         C = 1.0,
-#         gamma= 'scale'
+#         kernel ='linear',
+#         C=1.0,
+#         gamma='scale'
 #     )
 #     model.fit(X_train_scale, Y_train)
     
 #     model.predict(X_test_scale)
     
 #     joblib.dump(model,SVM_MODEL_PATH)
-#     joblib.dump(model, SVM_SCALER_PATH)
+#     joblib.dump(scaler, SVM_SCALER_PATH)
     
 #     return scaler, model
